@@ -1,0 +1,827 @@
+/* ----------------------------------------------------------------------
+   Dot matrix visualizer
+---------------------------------------------------------------------- */
+.dot-viz {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 1;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 600ms ease;
+}
+
+/* ----------------------------------------------------------------------
+   Spectrogram (parallel-compare alternate visualizer)
+---------------------------------------------------------------------- */
+.spectrogram-viz {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 1;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 600ms ease;
+}
+
+.spectrogram-viz img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.spectrogram-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--dot-color, #fff);
+  box-shadow: 0 0 10px var(--dot-color, #fff);
+  pointer-events: none;
+  /* No CSS transition — Spectrogram.tsx writes `left` directly each rAF, so
+     a transition would chase the new value and lag visibly behind playback. */
+}
+
+@media (max-width: 720px) {
+  .spectrogram-viz {
+    aspect-ratio: 3 / 1;
+  }
+}
+
+.dot-viz canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dot-viz.tall {
+  aspect-ratio: 2 / 1;
+}
+
+.dot-viz.hero {
+  aspect-ratio: 5 / 1;
+}
+
+@media (max-width: 720px) {
+  .dot-viz {
+    aspect-ratio: 3 / 1;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   Audio player
+---------------------------------------------------------------------- */
+.player {
+  display: grid;
+  gap: 1rem;
+}
+
+.player-controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+@media (max-width: 540px) {
+  .player-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+.player-btn {
+  min-width: 7.5rem;
+}
+
+.player-scrub {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.player-time {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  color: var(--fg-dim);
+  min-width: 2.6rem;
+  text-align: center;
+}
+
+.player-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--rule);
+  outline: none;
+  cursor: pointer;
+}
+
+.player-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--dot-color);
+  border: none;
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+
+.player-range::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+.player-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--dot-color);
+  border: none;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------------
+   Lyrics scroller (karaoke)
+---------------------------------------------------------------------- */
+.lyrics-scroller {
+  position: relative;
+  height: 420px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.32);
+  padding: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dot-color) transparent;
+  scroll-behavior: smooth;
+  transition: border-color 600ms ease;
+}
+
+.lyrics-scroller::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lyrics-scroller::-webkit-scrollbar-thumb {
+  background: var(--dot-color);
+  opacity: 0.5;
+}
+
+.lyrics-scroller-pad {
+  height: 40%;
+}
+
+.lyrics-scroller-line {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.85rem 1.4rem;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 280ms ease;
+  user-select: none;
+}
+
+.lyrics-scroller-line:focus-visible {
+  outline: none;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.lyrics-scroller-line.upcoming {
+  opacity: 0.32;
+}
+
+.lyrics-scroller-line.past {
+  opacity: 0.55;
+}
+
+.lyrics-scroller-line.active {
+  opacity: 1;
+  border-left-color: var(--dot-color);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 70%
+  );
+}
+
+.lyrics-scroller-line .lyrics-primary {
+  color: var(--fg);
+  font-size: 1.04rem;
+  line-height: 1.38;
+  transition: color 280ms ease;
+}
+
+.lyrics-scroller-line.active .lyrics-primary {
+  color: var(--dot-color);
+  font-weight: 500;
+  text-shadow: 0 0 14px var(--dot-color);
+}
+
+.lyrics-scroller-line .lyrics-romanization {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  color: var(--fg-faint);
+}
+
+.lyrics-scroller-line.active .lyrics-romanization {
+  color: var(--dot-color);
+  opacity: 0.9;
+}
+
+.lyrics-scroller-line .lyrics-translation {
+  font-size: 0.86rem;
+  font-style: italic;
+  color: var(--fg-dim);
+}
+
+@media (max-width: 720px) {
+  .lyrics-scroller-line {
+    padding: 0.7rem 1rem;
+  }
+  .lyrics-scroller-line .lyrics-primary {
+    font-size: 0.96rem;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   Lyrics panel (legacy excerpt)
+---------------------------------------------------------------------- */
+.lyrics {
+  border-left: 2px solid var(--dot-color);
+  padding: 0.4rem 0 0.4rem 1.4rem;
+  font-size: 0.96rem;
+  line-height: 1.55;
+  color: var(--fg-dim);
+}
+
+.lyric-line {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.18rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px dashed transparent;
+}
+
+.lyric-line + .lyric-line {
+  border-top: 1px dashed rgba(255, 255, 255, 0.04);
+}
+
+.lyric-primary {
+  color: var(--fg);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.lyric-translation {
+  color: var(--fg-dim);
+  font-size: 0.86rem;
+  font-style: italic;
+}
+
+.lyric-romanization {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--dot-color);
+  opacity: 0.85;
+}
+
+/* ----------------------------------------------------------------------
+   Landing
+---------------------------------------------------------------------- */
+.landing {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 5rem var(--gutter);
+  position: relative;
+}
+
+.landing-inner {
+  max-width: var(--max-w);
+  width: 100%;
+  display: grid;
+  gap: 2.4rem;
+}
+
+.landing-eyebrow {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--dot-color);
+  opacity: 0.85;
+}
+
+.landing-title {
+  font-size: clamp(2.8rem, 8vw, 6.4rem);
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.landing-title .accent {
+  color: var(--dot-color);
+}
+
+.landing-question {
+  max-width: 60ch;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  color: var(--fg-dim);
+  line-height: 1.7;
+}
+
+.landing-question strong {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.landing-meta {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+}
+
+/* ----------------------------------------------------------------------
+   Section header & nav rail
+---------------------------------------------------------------------- */
+.nav-rail {
+  position: fixed;
+  left: 1.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 0.7rem;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+@media (max-width: 900px) {
+  .nav-rail {
+    display: none;
+  }
+}
+
+.nav-rail-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0.18rem 0;
+  text-align: left;
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  transition: color 200ms ease;
+}
+
+.nav-rail-item .nav-rail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fg-faint);
+  transition: background 200ms ease, transform 200ms ease;
+}
+
+.nav-rail-item.active {
+  color: var(--dot-color);
+}
+
+.nav-rail-item.active .nav-rail-dot {
+  background: var(--dot-color);
+  transform: scale(1.6);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4), 0 0 14px var(--dot-color);
+}
+
+.nav-rail-item:hover {
+  color: var(--fg);
+}
+
+.nav-rail-item:hover .nav-rail-dot {
+  background: var(--fg);
+}
+
+/* ----------------------------------------------------------------------
+   Synthesis
+---------------------------------------------------------------------- */
+.synthesis-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.4rem;
+  margin: 2.5rem 0;
+}
+
+@media (min-width: 720px) {
+  .synthesis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.synthesis-card {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 1.4rem 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  transition: border-color 200ms ease;
+}
+
+.synthesis-card:hover {
+  border-color: var(--dot-color);
+}
+
+.synthesis-card h4 {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.86rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dot-color);
+  margin-bottom: 0.55rem;
+}
+
+.synthesis-card .src {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 0.7rem;
+}
+
+.synthesis-card p {
+  font-size: 0.94rem;
+  margin: 0;
+  color: var(--fg-dim);
+  line-height: 1.55;
+}
+
+/* ----------------------------------------------------------------------
+   Bibliography
+---------------------------------------------------------------------- */
+.bib-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.bib-item {
+  border-left: 2px solid var(--rule);
+  padding: 0.4rem 0 0.4rem 1.2rem;
+  font-size: 0.92rem;
+  color: var(--fg-dim);
+  line-height: 1.55;
+  transition: border-color 200ms ease;
+}
+
+.bib-item:hover {
+  border-left-color: var(--dot-color);
+}
+
+.bib-item .author {
+  color: var(--fg);
+}
+
+.bib-item .title {
+  font-style: italic;
+}
+
+/* ----------------------------------------------------------------------
+   Section index badge
+---------------------------------------------------------------------- */
+.section-index {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  color: var(--dot-color);
+  margin-bottom: 0.6rem;
+}
+
+/* ----------------------------------------------------------------------
+   Track header (artist + title)
+---------------------------------------------------------------------- */
+.track-header {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.track-artist {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.92rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.track-title {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 2.2rem;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  line-height: 1.1;
+}
+
+.track-title-translation {
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--dot-color);
+  font-style: italic;
+}
+
+@media (max-width: 720px) {
+  .track-title {
+    font-size: 1.7rem;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   Parallel compare section
+---------------------------------------------------------------------- */
+.compare-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  margin: 2rem 0 1.2rem;
+}
+
+.compare-time {
+  margin-left: auto;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--fg-dim);
+}
+
+/* Lock the play/pause button width so swapping "▶ Play" ↔ "■ Pause" doesn't
+   reflow the toolbar. */
+.play-pause-btn {
+  width: 9rem;
+  text-align: center;
+}
+
+/* Sliding two-position toggle: spectrogram | visualizer */
+.view-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: transparent;
+  border: 1px solid var(--dot-color);
+  border-radius: 8px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.view-toggle-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  background: var(--dot-color);
+  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.view-toggle-thumb[data-mode="dots"] {
+  transform: translateX(100%);
+}
+
+.view-toggle-btn {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  /* Match the global `button` block (0.7rem 1.4rem, 0.78rem font) so the
+     switch lines up with the Sync / Play buttons in the toolbar. */
+  padding: 0.7rem 1.4rem;
+  color: var(--fg-dim);
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 220ms ease;
+}
+
+.view-toggle-btn:hover {
+  background: transparent;
+  color: var(--fg);
+}
+
+.view-toggle-btn.active {
+  color: var(--bg-deep);
+}
+
+.view-toggle-btn:focus-visible {
+  outline: 2px solid var(--dot-color);
+  outline-offset: 3px;
+}
+
+.compare-scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--rule);
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+
+.compare-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+}
+
+.compare-scrub::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+}
+
+@media (min-width: 720px) {
+  .compare-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1100px) {
+  .compare-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.compare-lane {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem 1rem;
+  background: rgba(0, 0, 0, 0.32);
+  display: grid;
+  gap: 0.8rem;
+  transition: border-color 200ms ease, opacity 200ms ease;
+}
+
+/* Each lane can override the global palette token via its data-palette */
+.compare-lane[data-palette="cranberries"] { --dot-color: #b8e0a8; --dot-color-secondary: #6f9f72; --accent: #b8e0a8; }
+.compare-lane[data-palette="fayewong"]    { --dot-color: #ff4d8b; --dot-color-secondary: #00d4ff; --accent: #ff4d8b; }
+.compare-lane[data-palette="irishwomen"]  { --dot-color: #f4b860; --dot-color-secondary: #c87f3a; --accent: #f4b860; }
+.compare-lane[data-palette="mitsushima"]  { --dot-color: #e74c5e; --dot-color-secondary: #3a4a7c; --accent: #e74c5e; }
+
+.compare-lane.is-on {
+  border-color: var(--dot-color);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02), 0 0 22px rgba(255, 255, 255, 0.025);
+}
+
+.compare-lane.is-off {
+  opacity: 0.55;
+}
+
+.compare-lane-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.compare-toggle {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  padding: 0.45rem 0.7rem;
+  min-width: 5rem;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  color: var(--fg-dim);
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.compare-lane.is-on .compare-toggle {
+  border-color: var(--dot-color);
+  color: var(--dot-color);
+}
+
+.compare-lane.is-on .compare-toggle:hover {
+  background: var(--dot-color);
+  color: #000;
+}
+
+.compare-lane-title {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.compare-lane-artist {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.92rem;
+  letter-spacing: 0.12em;
+  color: var(--fg);
+}
+
+.compare-lane-meta {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--fg-faint);
+}
+
+.compare-lane-controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.compare-vol-label {
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--fg-faint);
+}
+
+.compare-vol-readout {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim);
+  min-width: 2ch;
+  text-align: right;
+}
+
+.compare-vol {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--rule);
+  outline: none;
+  cursor: pointer;
+}
+
+.compare-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dot-color);
+  border: none;
+  cursor: pointer;
+}
+
+.compare-vol::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dot-color);
+  border: none;
+}
+
+.compare-vol:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.compare-loading {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--fg-faint);
+}

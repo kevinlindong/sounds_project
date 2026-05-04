@@ -1,0 +1,251 @@
+@font-face {
+  font-family: "DotMatrix";
+  src: url("/fonts/DOTMATRI.TTF") format("truetype");
+  font-display: swap;
+}
+
+:root {
+  --bg: #07070b;
+  --bg-deep: #03030a;
+  --fg: #f0e6d2;
+  --fg-dim: rgba(240, 230, 210, 0.62);
+  --fg-faint: rgba(240, 230, 210, 0.32);
+  --dot-color: #b8e0a8;
+  --dot-color-secondary: #b8e0a8;
+  --accent: #b8e0a8;
+  --rule: rgba(240, 230, 210, 0.14);
+  --max-w: 1180px;
+  --gutter: 2.25rem;
+  --section-pad: 7rem;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Inter", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-size: 16px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.025), transparent 55%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.018), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  transition: background-color 600ms ease;
+}
+
+::selection {
+  background: var(--dot-color);
+  color: var(--bg-deep);
+}
+
+a {
+  color: var(--dot-color);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--dot-color);
+  transition: opacity 160ms ease;
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.18;
+  color: var(--fg);
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  letter-spacing: 0.05em;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 3.6vw, 2.7rem);
+}
+
+h3 {
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+p {
+  margin: 0 0 1.05em 0;
+  max-width: 64ch;
+}
+
+p + p {
+  text-indent: 0;
+}
+
+.mono {
+  font-family: "DotMatrix", "Courier New", monospace;
+  letter-spacing: 0.06em;
+}
+
+.kicker {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--dot-color);
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  opacity: 0.85;
+}
+
+.app-shell {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.section {
+  position: relative;
+  padding: var(--section-pad) var(--gutter);
+  border-top: 1px solid var(--rule);
+  transition: background-color 600ms ease, border-color 600ms ease;
+}
+
+.section:first-of-type {
+  border-top: none;
+}
+
+.section-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+@media (min-width: 900px) {
+  .section-inner.two-col {
+    grid-template-columns: 1.05fr 1fr;
+    align-items: start;
+    gap: 4rem;
+  }
+}
+
+.section-meta {
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.section-meta span:not(:last-child)::after {
+  content: "·";
+  margin-left: 1.4rem;
+  opacity: 0.6;
+}
+
+.section-title {
+  margin-bottom: 1.6rem;
+}
+
+.section-prose {
+  color: var(--fg);
+}
+
+.section-prose p {
+  font-size: 1.04rem;
+}
+
+.divider {
+  height: 1px;
+  background: var(--rule);
+  width: 100%;
+  margin: 2.5rem 0;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "DotMatrix", "Courier New", monospace;
+  letter-spacing: 0.3em;
+  font-size: 0.72rem;
+  color: var(--fg-faint);
+  text-transform: uppercase;
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.85; }
+}
+
+button {
+  font-family: "DotMatrix", "Courier New", monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--dot-color);
+  border: 1px solid var(--dot-color);
+  border-radius: 8px;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  transition: all 180ms ease;
+  font-size: 0.78rem;
+}
+
+button:hover {
+  background: var(--dot-color);
+  color: var(--bg-deep);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--dot-color);
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --section-pad: 5rem;
+    --gutter: 1.4rem;
+  }
+
+  p {
+    font-size: 0.98rem;
+  }
+
+  .section-meta {
+    font-size: 0.7rem;
+    gap: 1rem;
+  }
+}

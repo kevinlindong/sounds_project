@@ -1,0 +1,62 @@
+/* Per-section palettes. The active section adds a class to <body>; CSS
+   variables cascade so the dot visualizer, accents, and rules all swap. */
+
+body[data-palette="landing"] {
+  --bg: #07070b;
+  --dot-color: #f0e6d2;
+  --dot-color-secondary: #b8a878;
+  --accent: #f0e6d2;
+}
+
+body[data-palette="intro"] {
+  --bg: #07070b;
+  --dot-color: #d8d2c0;
+  --dot-color-secondary: #908872;
+  --accent: #d8d2c0;
+}
+
+/* Cranberries — Irish green, near-black, alt-rock cool */
+body[data-palette="cranberries"] {
+  --bg: #050a07;
+  --dot-color: #b8e0a8;
+  --dot-color-secondary: #6f9f72;
+  --accent: #b8e0a8;
+}
+
+/* Faye Wong — Chungking Express neon (magenta + cyan), film-saturated */
+body[data-palette="fayewong"] {
+  --bg: #0a0612;
+  --dot-color: #ff4d8b;
+  --dot-color-secondary: #00d4ff;
+  --accent: #ff4d8b;
+}
+
+/* Irish Women in Harmony — warm amber, charity warmth */
+body[data-palette="irishwomen"] {
+  --bg: #0c0805;
+  --dot-color: #f4b860;
+  --dot-color-secondary: #c87f3a;
+  --accent: #f4b860;
+}
+
+/* Mitsushima — Japanese vermilion + indigo, restrained contemporary */
+body[data-palette="mitsushima"] {
+  --bg: #08080e;
+  --dot-color: #e74c5e;
+  --dot-color-secondary: #3a4a7c;
+  --accent: #e74c5e;
+}
+
+body[data-palette="synthesis"] {
+  --bg: #06060b;
+  --dot-color: #c8c0a8;
+  --dot-color-secondary: #807660;
+  --accent: #c8c0a8;
+}
+
+body[data-palette="bibliography"] {
+  --bg: #050508;
+  --dot-color: #8a8270;
+  --dot-color-secondary: #5a5448;
+  --accent: #8a8270;
+}

@@ -1,0 +1,7 @@
+# Ignore everything in repo root
+/*
+
+# Except these
+!/.gitignore
+!/LICENSE
+!/frontend/
