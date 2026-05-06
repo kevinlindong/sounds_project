@@ -293,19 +293,6 @@ function blendColor(a: string, b: string, mix: number, intensity: number): strin
   return `rgba(${r}, ${g}, ${bl}, ${alpha})`;
 }
 
-function blendRGB(
-  a: [number, number, number],
-  b: [number, number, number],
-  mix: number,
-  intensity: number,
-): string {
-  const r = Math.round(a[0] * (1 - mix) + b[0] * mix);
-  const g = Math.round(a[1] * (1 - mix) + b[1] * mix);
-  const bl = Math.round(a[2] * (1 - mix) + b[2] * mix);
-  const alpha = Math.max(0.05, Math.min(1, intensity));
-  return `rgba(${r}, ${g}, ${bl}, ${alpha})`;
-}
-
 function parseColor(input: string): [number, number, number] {
   const s = input.trim();
   if (s.startsWith("#")) {
