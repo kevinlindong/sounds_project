@@ -35,6 +35,12 @@ export interface Track {
    * pitch stays in each recording's original key while beats stay locked.
    */
   playbackRate?: number;
+  /**
+   * Y-axis cap (Hz) of the rendered spectrogram PNG — must match the
+   * `fmax` in `analysis/spectrograms.py` so the overlay tick labels line
+   * up with the actual frequency content.
+   */
+  spectrogramFmax: number;
   /** Short excerpt for the inline section. */
   excerpt: LyricLine[];
   /**
@@ -360,6 +366,7 @@ export const TRACKS: Track[] = [
     durationSec: 253.25,
     vocalStart: 35.21,
     playbackRate: 1.0,
+    spectrogramFmax: 5000,
     excerpt: [
       { primary: "Oh my life is changing every day," },
       { primary: "in every possible way." },
@@ -394,6 +401,7 @@ export const TRACKS: Track[] = [
     // vocalStart 33.611s = acoustic onset of 夢 (vocal-band STFT peak).
     vocalStart: 33.5,
     playbackRate: 0.99379,
+    spectrogramFmax: 4500,
     excerpt: [
       {
         primary: "夢中人 一分鐘抱緊",
@@ -431,6 +439,7 @@ export const TRACKS: Track[] = [
     durationSec: 261.5,
     vocalStart: 6.25,
     playbackRate: 1.08694,
+    spectrogramFmax: 6000,
     excerpt: [
       { primary: "Oh my life is changing every day," },
       { primary: "in every possible way." },
@@ -458,6 +467,7 @@ export const TRACKS: Track[] = [
     // per-line because her pacing diverges from Wong's by the outro.
     vocalStart: MITSUSHIMA_VOCAL_START,
     playbackRate: 0.92547,
+    spectrogramFmax: 5500,
     excerpt: [
       {
         primary: "夢中人 一分鐘抱緊",

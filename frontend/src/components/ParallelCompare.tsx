@@ -4,8 +4,9 @@ import type { Track } from "../content/tracks";
 import { useAudioAnalyser, resumeSharedAudioContext } from "../hooks/useAudioAnalyser";
 import { DotMatrixVisualizer } from "./DotMatrixVisualizer";
 import { Spectrogram } from "./Spectrogram";
+import { Waveform } from "./Waveform";
 
-type ViewMode = "dots" | "spectrogram";
+type ViewMode = "dots" | "spectrogram" | "waveform";
 
 interface LaneState {
   enabled: boolean;
@@ -124,6 +125,8 @@ function Lane({
           cols={48}
           rows={8}
         />
+      ) : viewMode === "waveform" ? (
+        <Waveform track={track} audioRef={audioRef} />
       ) : (
         <Spectrogram track={track} audioRef={audioRef} />
       )}
@@ -349,6 +352,15 @@ export function ParallelCompare() {
               aria-checked={viewMode === "spectrogram"}
             >
               Spectrogram
+            </button>
+            <button
+              type="button"
+              className={`view-toggle-btn ${viewMode === "waveform" ? "active" : ""}`}
+              onClick={() => setViewMode("waveform")}
+              role="radio"
+              aria-checked={viewMode === "waveform"}
+            >
+              Waveform
             </button>
             <button
               type="button"

@@ -13,7 +13,7 @@ export function Synthesis() {
           <header>
             <div className="section-index">07</div>
             <h2 id="synthesis-title" className="section-title">
-              Synthesis: a chain that spirals
+              Synthesis
             </h2>
           </header>
 
@@ -45,7 +45,7 @@ export function Synthesis() {
           <header>
             <div className="section-index">08</div>
             <h2 id="conclusion-title" className="section-title">
-              Coda: never quite as it seems
+              The conclusion
             </h2>
           </header>
 

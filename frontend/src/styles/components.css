@@ -47,8 +47,79 @@
      a transition would chase the new value and lag visibly behind playback. */
 }
 
+/* Frequency-axis tick labels overlaid on top of the spectrogram. Floats
+   over the leftmost slice of data (which is mostly silence in the noise
+   floor) with a slight backdrop so the label stays readable. */
+.spectrogram-axis {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.spectrogram-axis-tick {
+  position: absolute;
+  left: 4px;
+  font: 10px/1 ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .spectrogram-axis-tick {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
 @media (max-width: 720px) {
   .spectrogram-viz {
+    aspect-ratio: 3 / 1;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   Waveform (parallel-compare alternate visualizer)
+---------------------------------------------------------------------- */
+.waveform-viz {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 1;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 600ms ease;
+}
+
+.waveform-viz img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.waveform-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--dot-color, #fff);
+  box-shadow: 0 0 10px var(--dot-color, #fff);
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .waveform-viz {
     aspect-ratio: 3 / 1;
   }
 }
@@ -578,11 +649,11 @@
   text-align: center;
 }
 
-/* Sliding two-position toggle: spectrogram | visualizer */
+/* Sliding three-position toggle: spectrogram | waveform | visualizer */
 .view-toggle {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   background: transparent;
   border: 1px solid var(--dot-color);
   border-radius: 8px;
@@ -595,14 +666,18 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 50%;
+  width: calc(100% / 3);
   background: var(--dot-color);
   transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
 }
 
-.view-toggle-thumb[data-mode="dots"] {
+.view-toggle-thumb[data-mode="waveform"] {
   transform: translateX(100%);
+}
+
+.view-toggle-thumb[data-mode="dots"] {
+  transform: translateX(200%);
 }
 
 .view-toggle-btn {
