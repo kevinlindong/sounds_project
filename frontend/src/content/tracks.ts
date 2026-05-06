@@ -362,7 +362,7 @@ export const TRACKS: Track[] = [
     origin: "Limerick, Ireland",
     language: "English",
     genre: "Alternative rock / dream pop",
-    audioSrc: "/audio/01-cranberries-dreams.mp3",
+    audioSrc: `${import.meta.env.BASE_URL}audio/01-cranberries-dreams.mp3`,
     durationSec: 253.25,
     vocalStart: 35.21,
     playbackRate: 1.0,
@@ -389,7 +389,7 @@ export const TRACKS: Track[] = [
     origin: "Hong Kong",
     language: "Cantonese",
     genre: "Cantopop",
-    audioSrc: "/audio/02-fayewong-mengzhongren.mp3",
+    audioSrc: `${import.meta.env.BASE_URL}audio/02-fayewong-mengzhongren.mp3`,
     durationSec: 262.5,
     // Detected tempo 129.20 BPM — 0.62% faster than Cranberries' 128.40,
     // so playbackRate slows it to 128.40/129.20 = 0.99379 to match the
@@ -435,7 +435,7 @@ export const TRACKS: Track[] = [
     origin: "Ireland (collective)",
     language: "English",
     genre: "Charity collective / vocal harmony",
-    audioSrc: "/audio/03-irishwomen-dreams.mp3",
+    audioSrc: `${import.meta.env.BASE_URL}audio/03-irishwomen-dreams.mp3`,
     durationSec: 261.5,
     vocalStart: 6.25,
     playbackRate: 1.08694,
@@ -460,7 +460,7 @@ export const TRACKS: Track[] = [
     origin: "Japan (covering Wong's Cantonese version)",
     language: "Cantonese (sung by a Japanese performer)",
     genre: "Contemporary cover",
-    audioSrc: "/audio/04-mitsushima-mengzhongren.mp3",
+    audioSrc: `${import.meta.env.BASE_URL}audio/04-mitsushima-mengzhongren.mp3`,
     durationSec: 257.8,
     // vocalStart sourced from MITSUSHIMA_VOCAL_START so that the first
     // Mitsushima lyric onset moves with it; subsequent lines are listened-back

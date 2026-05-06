@@ -1,4 +1,5 @@
 import { BIBLIOGRAPHY } from "../content/essay";
+import { renderProse } from "../utils/renderProse";
 
 export function Bibliography() {
   return (
@@ -22,7 +23,7 @@ export function Bibliography() {
               <div>
                 {entry.cite.map((part, j) =>
                   typeof part === "string" ? (
-                    <span key={j}>{part}</span>
+                    <span key={j}>{renderProse(part)}</span>
                   ) : (
                     <em key={j}>{part.italic}</em>
                   ),

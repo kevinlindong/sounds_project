@@ -9,13 +9,13 @@
   --bg-deep: #03030a;
   --fg: #f0e6d2;
   --fg-dim: rgba(240, 230, 210, 0.62);
-  --fg-faint: rgba(240, 230, 210, 0.32);
+  --fg-faint: rgba(240, 230, 210, 0.55);
   --dot-color: #b8e0a8;
   --dot-color-secondary: #b8e0a8;
   --accent: #b8e0a8;
   --rule: rgba(240, 230, 210, 0.14);
   --max-w: 1180px;
-  --gutter: 2.25rem;
+  --gutter: 1.75rem;
   --section-pad: 7rem;
 
   color-scheme: dark;
@@ -145,7 +145,7 @@ p + p {
 @media (min-width: 900px) {
   .section-inner.two-col {
     grid-template-columns: 1.05fr 1fr;
-    align-items: start;
+    align-items: stretch;
     gap: 4rem;
   }
 }
@@ -178,6 +178,15 @@ p + p {
 
 .section-prose p {
   font-size: 1.04rem;
+}
+
+/* Single-column sections (Intro / Synthesis / Conclusion) have no right-hand
+   companion column, so the global 64ch paragraph cap leaves a visible band of
+   empty space on the right. Let prose fill the section-inner container in
+   those cases; two-col track sections keep the cap for readable line length
+   alongside the player. */
+.section-inner:not(.two-col) .section-prose p {
+  max-width: none;
 }
 
 .divider {
@@ -234,10 +243,16 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+@media (max-width: 1100px) {
+  :root {
+    --gutter: 1.4rem;
+  }
+}
+
 @media (max-width: 720px) {
   :root {
     --section-pad: 5rem;
-    --gutter: 1.4rem;
+    --gutter: 1.1rem;
   }
 
   p {

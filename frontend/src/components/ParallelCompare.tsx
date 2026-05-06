@@ -305,14 +305,14 @@ export function ParallelCompare() {
     <section
       id="compare"
       className="section"
-      data-palette="synthesis"
+      data-palette="compare"
       aria-labelledby="compare-title"
     >
       <div className="section-inner">
         <header>
           <div className="section-index">06</div>
           <h2 id="compare-title" className="section-title">
-            Listen in parallel
+            Listen in Parallel
           </h2>
           <p
             style={{
@@ -324,9 +324,12 @@ export function ParallelCompare() {
           >
             Toggle two or more tracks on and press <em>Sync &amp; Play</em>. The
             same melody, performed across thirty-two years and three languages,
-            stacks into a single audible field — useful for hearing what
-            translation actually preserves and what it rewrites. Adjust each
-            lane&apos;s volume to bring different versions to the foreground.
+            stacks into a single audible field, useful for hearing what
+            translation actually preserves and what it rewrites. The tracks
+            begin in rhythm and lyric alignment, but drift apart the longer
+            they play together, exposing how each version bends time and
+            phrasing differently. Adjust each lane&apos;s volume to bring
+            different versions to the foreground.
           </p>
         </header>
 

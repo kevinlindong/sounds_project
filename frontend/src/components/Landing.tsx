@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { DotMatrixVisualizer } from "./DotMatrixVisualizer";
 import type { AnalyserHandle } from "../hooks/useAudioAnalyser";
 import { TITLE, SUBTITLE, RESEARCH_QUESTION } from "../content/essay";
+import { renderProse } from "../utils/renderProse";
 
 export function Landing() {
   // Landing visualizer is purely decorative — no audio source attached.
@@ -20,14 +21,41 @@ export function Landing() {
       aria-labelledby="landing-title"
     >
       <div className="landing-inner">
-        <div className="landing-eyebrow">A music studies final project</div>
+        <div className="landing-eyebrow">CORE-UA 730 Final Project — Kevin Dong</div>
         <h1 id="landing-title" className="landing-title">
-          {TITLE.split(" ").map((word, i, arr) => (
-            <span key={i}>
-              {i === arr.length - 1 ? <span className="accent">{word}</span> : word}
-              {i < arr.length - 1 ? " " : ""}
-            </span>
-          ))}
+          {(() => {
+            const words = TITLE.split(" ");
+            let charIdx = 0;
+            const renderChars = (text: string) =>
+              Array.from(text).map((ch) => {
+                const idx = charIdx++;
+                return (
+                  <span
+                    key={idx}
+                    className="title-char"
+                    style={{ ["--i" as string]: idx } as React.CSSProperties}
+                  >
+                    {ch}
+                  </span>
+                );
+              });
+            return words.flatMap((word, wi, arr) => {
+              const isLast = wi === arr.length - 1;
+              const chars = renderChars(word);
+              const wrapped = isLast ? (
+                <span key={`w${wi}`} className="accent">
+                  {chars}
+                </span>
+              ) : word === "Dreams" ? (
+                <em key={`w${wi}`}>{chars}</em>
+              ) : (
+                <span key={`w${wi}`}>{chars}</span>
+              );
+              if (isLast) return [wrapped];
+              charIdx++;
+              return [wrapped, " "];
+            });
+          })()}
         </h1>
 
         <DotMatrixVisualizer
@@ -35,10 +63,12 @@ export function Landing() {
           isPlaying={false}
           className="hero"
           ariaLabel="Decorative dot matrix"
+          colorWave
+          mouseReact
         />
 
         <p className="landing-question">
-          <strong>{RESEARCH_QUESTION}</strong>
+          <strong>{renderProse(RESEARCH_QUESTION)}</strong>
         </p>
 
         <p className="landing-question" style={{ color: "var(--fg-dim)" }}>

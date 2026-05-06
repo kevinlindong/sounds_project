@@ -1,4 +1,5 @@
 import { SYNTHESIS_INTRO, SYNTHESIS_CARDS, CONCLUSION } from "../content/essay";
+import { renderProse } from "../utils/renderProse";
 
 export function Synthesis() {
   return (
@@ -19,7 +20,7 @@ export function Synthesis() {
 
           <div className="section-prose">
             {SYNTHESIS_INTRO.map((p, i) => (
-              <p key={i}>{p.text}</p>
+              <p key={i}>{renderProse(p.text)}</p>
             ))}
           </div>
 
@@ -28,7 +29,7 @@ export function Synthesis() {
               <div className="synthesis-card" key={i}>
                 <h4>{card.concept}</h4>
                 <div className="src">{card.source}</div>
-                <p>{card.body}</p>
+                <p>{renderProse(card.body)}</p>
               </div>
             ))}
           </div>
@@ -51,7 +52,7 @@ export function Synthesis() {
 
           <div className="section-prose">
             {CONCLUSION.map((p, i) => (
-              <p key={i}>{p.text}</p>
+              <p key={i}>{renderProse(p.text)}</p>
             ))}
           </div>
         </div>

@@ -28,7 +28,7 @@ export function Spectrogram({ track, audioRef }: Props) {
     return () => cancelAnimationFrame(rafRef.current);
   }, [audioRef]);
 
-  const src = `/spectrograms/${track.id}-spectrogram.png`;
+  const src = `${import.meta.env.BASE_URL}spectrograms/${track.id}-spectrogram.png`;
 
   // Frequency tick marks: 0, every 2 kHz up to fmax, then fmax itself —
   // sparse enough to stay readable in the 4-lane parallel-compare grid

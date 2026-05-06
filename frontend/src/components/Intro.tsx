@@ -1,4 +1,5 @@
 import { INTRO } from "../content/essay";
+import { renderProse } from "../utils/renderProse";
 
 export function Intro() {
   return (
@@ -12,13 +13,13 @@ export function Intro() {
         <header>
           <div className="section-index">01</div>
           <h2 id="intro-title" className="section-title">
-            The question
+            The Question
           </h2>
         </header>
 
         <div className="section-prose">
           {INTRO.map((p, i) => (
-            <p key={i}>{p.text}</p>
+            <p key={i}>{renderProse(p.text)}</p>
           ))}
         </div>
       </div>

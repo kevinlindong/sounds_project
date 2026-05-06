@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { LyricLine } from "../content/tracks";
+import { resumeSharedAudioContext } from "../hooks/useAudioAnalyser";
 
 interface Props {
   lines: LyricLine[];
@@ -64,6 +65,7 @@ export function LyricsScroller({
     if (line.t === undefined) return;
     const el = audioRef.current;
     if (!el) return;
+    void resumeSharedAudioContext();
     el.currentTime = line.t;
     if (el.paused) {
       void el.play();
@@ -71,48 +73,49 @@ export function LyricsScroller({
   };
 
   return (
-    <div
-      ref={wrapRef}
-      className="lyrics-scroller"
-      aria-label="Synchronized lyrics"
-    >
-      <div className="lyrics-scroller-pad" aria-hidden="true" />
-      {lines.map((line, i) => {
-        const isActive = i === activeIdx;
-        const isPast = i < activeIdx;
-        const cls = ["lyrics-scroller-line"];
-        if (isActive) cls.push("active");
-        else if (isPast) cls.push("past");
-        else cls.push("upcoming");
+    <div className="lyrics-col">
+      <div
+        ref={wrapRef}
+        className="lyrics-scroller"
+        aria-label="Synchronized lyrics"
+      >
+        {lines.map((line, i) => {
+          const isActive = i === activeIdx;
+          const isPast = i < activeIdx;
+          const cls = ["lyrics-scroller-line"];
+          if (isActive) cls.push("active");
+          else if (isPast) cls.push("past");
+          else cls.push("upcoming");
 
-        return (
-          <div
-            key={i}
-            ref={(el) => {
-              lineRefs.current[i] = el;
-            }}
-            className={cls.join(" ")}
-            onClick={() => onLineClick(line)}
-            role={line.t !== undefined ? "button" : undefined}
-            tabIndex={line.t !== undefined ? 0 : -1}
-            onKeyDown={(e) => {
-              if ((e.key === "Enter" || e.key === " ") && line.t !== undefined) {
-                e.preventDefault();
-                onLineClick(line);
-              }
-            }}
-          >
-            <div className="lyrics-primary">{line.primary}</div>
-            {showRomanization && line.romanization && (
-              <div className="lyrics-romanization">{line.romanization}</div>
-            )}
-            {showTranslation && line.translation && (
-              <div className="lyrics-translation">{line.translation}</div>
-            )}
-          </div>
-        );
-      })}
-      <div className="lyrics-scroller-pad" aria-hidden="true" />
+          return (
+            <div
+              key={i}
+              ref={(el) => {
+                lineRefs.current[i] = el;
+              }}
+              className={cls.join(" ")}
+              onClick={() => onLineClick(line)}
+              role={line.t !== undefined ? "button" : undefined}
+              tabIndex={line.t !== undefined ? 0 : -1}
+              onKeyDown={(e) => {
+                if ((e.key === "Enter" || e.key === " ") && line.t !== undefined) {
+                  e.preventDefault();
+                  onLineClick(line);
+                }
+              }}
+            >
+              <div className="lyrics-primary">{line.primary}</div>
+              {showRomanization && line.romanization && (
+                <div className="lyrics-romanization">{line.romanization}</div>
+              )}
+              {showTranslation && line.translation && (
+                <div className="lyrics-translation">{line.translation}</div>
+              )}
+            </div>
+          );
+        })}
+        <div className="lyrics-scroller-pad" aria-hidden="true" />
+      </div>
     </div>
   );
 }

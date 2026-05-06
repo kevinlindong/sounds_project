@@ -47,6 +47,14 @@ body[data-palette="mitsushima"] {
   --accent: #e74c5e;
 }
 
+/* Listen in Parallel — lavender to suggest blended, layered voices */
+body[data-palette="compare"] {
+  --bg: #08070d;
+  --dot-color: #a78bfa;
+  --dot-color-secondary: #6d5fb8;
+  --accent: #a78bfa;
+}
+
 body[data-palette="synthesis"] {
   --bg: #06060b;
   --dot-color: #c8c0a8;

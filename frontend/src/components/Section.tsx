@@ -4,6 +4,7 @@ import type { EssayParagraph } from "../content/essay";
 import { useAudioAnalyser } from "../hooks/useAudioAnalyser";
 import { DotMatrixVisualizer } from "./DotMatrixVisualizer";
 import { LyricsScroller } from "./LyricsScroller";
+import { renderProse } from "../utils/renderProse";
 
 interface Props {
   index: string;
@@ -101,7 +102,7 @@ export function Section({ index, track, prose, id }: Props) {
               {track.artistRomanized ? ` · ${track.artistRomanized}` : ""}
             </div>
             <h2 id={`${id}-title`} className="track-title">
-              {track.title}
+              <em>{track.title}</em>
               {track.titleTranslation ? (
                 <span className="track-title-translation"> — {track.titleTranslation}</span>
               ) : null}
@@ -165,7 +166,7 @@ export function Section({ index, track, prose, id }: Props) {
         <div className="section-inner two-col">
           <div className="section-prose">
             {prose.map((p, i) => (
-              <p key={i}>{p.text}</p>
+              <p key={i}>{renderProse(p.text)}</p>
             ))}
           </div>
 

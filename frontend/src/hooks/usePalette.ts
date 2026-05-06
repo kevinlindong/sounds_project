@@ -10,8 +10,15 @@ export function usePalette(initial = "landing"): string {
   const [active, setActive] = useState(initial);
 
   useEffect(() => {
+    // Restrict to top-level page sections. ParallelCompare lanes carry
+    // `data-palette` for per-lane accent colors, and NavRail items carry it
+    // to color each dot by destination — observing either would corrupt the
+    // body palette (the rail is position:fixed so it's always intersecting,
+    // and lanes would flicker as the compare grid scrolls into view).
     const els = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-palette]"),
+      document.querySelectorAll<HTMLElement>(
+        "[data-palette]:not(.compare-lane):not(.nav-rail-item)",
+      ),
     );
     if (els.length === 0) return;
 

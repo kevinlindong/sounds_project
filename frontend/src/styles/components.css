@@ -103,7 +103,12 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* `fill` (not `cover`) so the time axis maps 1:1 from image x to container
+     x — `cover` crops the 5:1 PNG into the 4:1 lane and pulls image content
+     out of alignment with the playhead and vocal-start marker, which are
+     positioned in container coordinates. The y-axis is unitless amplitude,
+     so the small vertical stretch is harmless. */
+  object-fit: fill;
   user-select: none;
   pointer-events: none;
 }
@@ -118,9 +123,38 @@
   pointer-events: none;
 }
 
+.waveform-vocal-start {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed var(--dot-color, #fff);
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.waveform-vocal-start-label {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 3px;
+  color: var(--dot-color, #fff);
+  font-family: "DotMatrix", "Courier New", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+
 @media (max-width: 720px) {
   .waveform-viz {
     aspect-ratio: 3 / 1;
+  }
+  .waveform-vocal-start-label {
+    font-size: 0.56rem;
+    padding: 1px 4px;
   }
 }
 
@@ -166,7 +200,12 @@
 }
 
 .player-btn {
-  min-width: 7.5rem;
+  width: 8.5rem;
+  height: 2.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .player-scrub {
@@ -222,9 +261,14 @@
 /* ----------------------------------------------------------------------
    Lyrics scroller (karaoke)
 ---------------------------------------------------------------------- */
-.lyrics-scroller {
+.lyrics-col {
   position: relative;
-  height: 420px;
+  min-height: 420px;
+}
+
+.lyrics-scroller {
+  position: absolute;
+  inset: 0;
   border: 1px solid var(--rule);
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.32);
@@ -402,6 +446,24 @@
   color: var(--dot-color);
 }
 
+.landing-title .title-char {
+  transition: color 200ms ease, text-shadow 200ms ease;
+}
+
+.landing-title:hover .title-char {
+  animation: title-flow 2.4s linear infinite;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+@keyframes title-flow {
+  0%,
+  100% { color: #b8e0a8; text-shadow: 0 0 14px #b8e0a8; }
+  20%  { color: #ff4d8b; text-shadow: 0 0 14px #ff4d8b; }
+  40%  { color: #f4b860; text-shadow: 0 0 14px #f4b860; }
+  60%  { color: #e74c5e; text-shadow: 0 0 14px #e74c5e; }
+  80%  { color: #a78bfa; text-shadow: 0 0 14px #a78bfa; }
+}
+
 .landing-question {
   max-width: 60ch;
   font-size: clamp(1.05rem, 1.6vw, 1.25rem);
@@ -430,26 +492,42 @@
 ---------------------------------------------------------------------- */
 .nav-rail {
   position: fixed;
-  left: 1.4rem;
+  left: 1.1rem;
   top: 50%;
   transform: translateY(-50%);
   display: grid;
-  gap: 0.7rem;
+  gap: 1.15rem;
   z-index: 50;
   pointer-events: auto;
 }
 
-@media (max-width: 900px) {
+/* On narrower screens, shift the rail tighter to the edge and pad the
+   section content so the dots have their own lane and don't sit on top of
+   the prose. */
+@media (max-width: 1280px) {
+  .nav-rail {
+    left: 0.5rem;
+    gap: 1.4rem;
+  }
+  .section {
+    padding-left: calc(var(--gutter) + 1.3rem);
+  }
+}
+
+@media (max-width: 540px) {
   .nav-rail {
     display: none;
+  }
+  .section {
+    padding-left: var(--gutter);
   }
 }
 
 .nav-rail-item {
+  position: relative;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto;
   align-items: center;
-  gap: 0.7rem;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -461,6 +539,42 @@
   text-transform: uppercase;
   color: var(--fg-faint);
   transition: color 200ms ease;
+  --dot-self: var(--fg);
+}
+
+/* Each item carries its destination section's accent color so the active
+   dot lights up in the section being navigated to, independent of the
+   body's current palette. */
+.nav-rail-item[data-palette="landing"]     { --dot-self: #f0e6d2; }
+.nav-rail-item[data-palette="intro"]       { --dot-self: #d8d2c0; }
+.nav-rail-item[data-palette="cranberries"] { --dot-self: #b8e0a8; }
+.nav-rail-item[data-palette="fayewong"]    { --dot-self: #ff4d8b; }
+.nav-rail-item[data-palette="irishwomen"]  { --dot-self: #f4b860; }
+.nav-rail-item[data-palette="mitsushima"]  { --dot-self: #e74c5e; }
+.nav-rail-item[data-palette="compare"]     { --dot-self: #a78bfa; }
+.nav-rail-item[data-palette="synthesis"]   { --dot-self: #c8c0a8; }
+.nav-rail-item[data-palette="bibliography"]{ --dot-self: #8a8270; }
+
+.nav-rail-label {
+  position: absolute;
+  left: calc(100% + 0.65rem);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  white-space: nowrap;
+  background: rgba(7, 7, 11, 0.92);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.32rem 0.55rem;
+  color: var(--fg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.nav-rail-item:hover .nav-rail-label,
+.nav-rail-item:focus-visible .nav-rail-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 .nav-rail-item .nav-rail-dot {
@@ -472,13 +586,13 @@
 }
 
 .nav-rail-item.active {
-  color: var(--dot-color);
+  color: var(--dot-self);
 }
 
 .nav-rail-item.active .nav-rail-dot {
-  background: var(--dot-color);
+  background: var(--dot-self);
   transform: scale(1.6);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4), 0 0 14px var(--dot-color);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4), 0 0 14px var(--dot-self);
 }
 
 .nav-rail-item:hover {
@@ -524,6 +638,11 @@
   text-transform: uppercase;
   color: var(--dot-color);
   margin-bottom: 0.55rem;
+  transition: text-shadow 200ms ease;
+}
+
+.synthesis-card:hover h4 {
+  text-shadow: 0 0 14px var(--dot-color);
 }
 
 .synthesis-card .src {
@@ -533,6 +652,11 @@
   text-transform: uppercase;
   color: var(--fg-faint);
   margin-bottom: 0.7rem;
+  transition: color 200ms ease;
+}
+
+.synthesis-card:hover .src {
+  color: var(--fg-dim);
 }
 
 .synthesis-card p {
@@ -540,6 +664,11 @@
   margin: 0;
   color: var(--fg-dim);
   line-height: 1.55;
+  transition: color 200ms ease;
+}
+
+.synthesis-card:hover p {
+  color: var(--fg);
 }
 
 /* ----------------------------------------------------------------------
@@ -559,11 +688,12 @@
   font-size: 0.92rem;
   color: var(--fg-dim);
   line-height: 1.55;
-  transition: border-color 200ms ease;
+  transition: border-color 200ms ease, color 200ms ease;
 }
 
 .bib-item:hover {
   border-left-color: var(--dot-color);
+  color: var(--fg);
 }
 
 .bib-item .author {
